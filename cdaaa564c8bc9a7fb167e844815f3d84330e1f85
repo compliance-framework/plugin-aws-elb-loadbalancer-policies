@@ -1,0 +1,5 @@
+lisa-design:
+- Audit-event policies default to evidence-only mode through flat `data.require_disposal_audit_events` and `data.require_management_audit_events`; enabling those gates is the contract for turning missing audit evidence into violations.
+- `elbv2_edge_endpoint_inventory` is the only policy that treats `internal` load balancers as not applicable; all other policies evaluate internal and internet-facing load balancers identically.
+- Management change auditing recognizes listener and rule mutation events by explicit CloudTrail `event_name` allowlist, keeping load balancer disposal events separate from listener/rule change evidence.
+- Management event staleness uses `data.now` only as an optional numeric nanosecond test/runtime override; when absent, the policy calls `time.now_ns()` directly to avoid broad root `data` introspection.
