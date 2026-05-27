@@ -1,0 +1,176 @@
+lisa-addressed:
+---
+Comment (.github/workflows/build-and-upload.yml:30):
+_⚠️ Potential issue_ | _🟠 Major_ | _⚡ Quick win_
+
+<details>
+<summary>🧩 Analysis chain</summary>
+
+🏁 Script executed:
+
+```shell
+#!/bin/bash
+set -euo pipefail
+# Verify direct GitHub-expression interpolation inside run lines
+rg -nP '^\s*-\s*run:.*\$\{\{[^}]+\}\}' .github/workflows/build-and-upload.yml
+```
+
+Repository: compliance-framework/plugin-aws-elb-loadbalancer-policies
+
+Length of output: 324
+
+---
+
+🏁 Script executed:
+
+```shell
+#!/bin/bash
+set -euo pipefail
+FILE=".github/workflows/build-and-upload.yml"
+echo "== File head =="
+sed -n '1,120p' "$FILE"
+echo "== Around flagged lines =="
+sed -n '20,45p' "$FILE"
+```
+
+Repository: compliance-framework/plugin-aws-elb-loadbalancer-policies
+
+Length of output: 2188
+
+---
+
+🌐 Web query:
+
+`bash command substitution inside double quotes $() executes`
+
+💡 Result:
+
+Yes, bash command substitution using the $(command) syntax executes even when placed inside double quotes [1][2]. When the shell encounters a command substitution within double quotes, it performs the following actions: 1. Execution: The command inside the parentheses is executed in a subshell environment [1]. 2. Capture: The standard output of that command is captured, with trailing newlines deleted [1][3]. 3. Substitution: The $(command) construct is replaced by the captured output [1]. 4. Quoting Behavior: Crucially, when the substitution occurs within double quotes, Bash does not perform word splitting or filename expansion (globbing) on the result [1][3]. This preserves whitespace and special characters in the output, which is generally considered the safest and most robust practice in shell scripting [4][5]. In contrast, if command substitution is performed outside of double quotes, the resulting string is subject to word splitting and filename expansion, which can lead to errors if the command's output contains spaces, tabs, newlines, or globbing characters [4][3][5].
+
+Citations:
+
+- 1: https://www.gnu.org/s/bash/manual/html_node/Command-Substitution.html
+- 2: https://saturncloud.io/blog/difference-between-single-and-double-quotes-in-bash/
+- 3: https://ss64.com/bash/syntax-substitution.html
+- 4: https://unix.stackexchange.com/questions/118433/quoting-within-command-substitution-in-bash
+- 5: https://dev.to/alanwest/why-your-bash-scripts-keep-breaking-and-how-to-escape-the-trap-4ccp
+
+---
+
+🌐 Web query:
+
+`git ref name allowed characters include $ or $( )`
+
+💡 Result:
+
+Git ref names (such as branch or tag names) are permitted to contain the dollar sign ($) and parentheses ( ( and)) characters [1][2]. Git's rules for valid reference names are enforced by the git-check-ref-format command [2][3]. While Git is permissive regarding most characters, it explicitly prohibits specific ASCII control characters, spaces, and a limited set of punctuation marks that have special meanings in Git's command syntax (such as ~, ^,:,?, *, [, \, and @{) [1][2]. Because $ and parentheses do not appear on this restricted list, they are technically allowed in Git reference names [1][2]. However, there are practical considerations for using these characters: 1. Shell Interaction: When using Git via a command-line interface, characters like $ and parentheses often have special meanings in shells (e.g., bash or zsh) [4][5]. For example, a $ might trigger variable interpolation, and parentheses can be used for subshells [5]. If you use these characters in a branch name, you must quote or escape them (e.g., git checkout 'branch-with-$') to prevent your shell from interpreting them before they are passed to Git [4]. 2. Potential Confusion: While Git accepts these characters, using them can make working with the repository more cumbersome and prone to accidental errors when typing commands [4][5]. It is generally recommended to stick to alphanumeric characters, hyphens, underscores, periods, and forward slashes [4]. For definitive validation, you can test if a specific name is accepted in your current environment by running git check-ref-format --branch <name> [2][6]. If the command exits with a non-zero status, the name is invalid [3][7].
+
+Citations:
+
+- 1: https://stackoverflow.com/questions/3651860/which-characters-are-illegal-within-a-branch-name
+- 2: https://git-scm.com/docs/git-check-ref-format/2.52.0
+- 3: https://man.archlinux.org/man/git-check-ref-format.1.en.txt
+- 4: https://docs.github.com/en/get-started/using-git/dealing-with-special-characters-in-branch-and-tag-names
+- 5: https://www.baeldung.com/ops/git-illegal-characters-ref-branch-tag
+- 6: https://stackoverflow.com/questions/12093748/how-do-i-check-for-valid-git-branch-names
+- 7: https://www.kernel.org/pub/software/scm/git/docs/git-check-ref-format.html
+
+---
+
+🌐 Web query:
+
+`GitHub Actions best practice avoid using ${{ }} directly in run commands use env instead`
+
+💡 Result:
+
+In GitHub Actions, you should avoid using ${{ }} expressions directly within run commands because it exposes your workflow to critical security risks, specifically command injection [1][2][3]. When you use the ${{ }} syntax directly in a run block, GitHub Actions evaluates the expression and performs macro-expansion before the script is executed by the runner [1][3]. If the expression contains untrusted input—such as PR titles, issue comments, or other user-controlled data—an attacker can inject malicious shell commands by including shell metacharacters (e.g.,;, &&, |) [1][2][3]. Because the expression is replaced with literal text before the shell sees it, these injected commands will execute with the same privileges as your workflow [1][3][4]. The recommended best practice is to pass untrusted input through an intermediate environment variable [1][5][2]. How to implement the secure approach: 1. Define an environment variable in the env section of your step. 2. Assign the ${{ }} expression to that environment variable. 3. Reference the environment variable inside your run command using standard shell syntax (e.g., $VARIABLE_NAME) [1][2]. Vulnerable example: - name: Print Title run: echo "Title: ${{ github.event.issue.title }}" Secure example: - name: Print Title env: ISSUE_TITLE: ${{ github.event.issue.title }} run: echo "Title: $ISSUE_TITLE" By using this approach, the input is treated as a literal variable value by the shell, preventing it from being interpreted as executable command logic [1][3]. While this does not eliminate all security risks (the input itself remains untrusted data), it effectively neutralizes the primary vector for command injection by separating data from command execution [1]. Always treat inputs sourced from external contributors with caution and consider additional validation or sanitization when necessary [1][3][4].
+
+Citations:
+
+- 1: https://github.blog/security/supply-chain-security/four-tips-to-keep-your-github-actions-workflows-secure/
+- 2: https://github.com/github/gh-aw/issues/9124
+- 3: https://github.com/github/docs/blob/main/content/actions/concepts/security/script-injections.md
+- 4: https://openssf.org/blog/2024/08/12/mitigating-attack-vectors-in-github-workflows/
+- 5: https://github.com/github/docs/issues/41779
+
+---
+
+</details>
+
+**Avoid `${{ ... }}` interpolation directly inside shell `run` commands (shell injection risk via `${{ github.ref_name }}`).**
+
+`gooci upload-single` inlines `${{ github.ref_name }}` into a double-quoted argument; bash still performs command substitution for `$()` inside double quotes. Pass these values through `env` and reference them as shell variables instead.**
+
+<details>
+<summary>Suggested fix</summary>
+
+```diff
+-      - run: gooci login ghcr.io --username "${{ github.actor }}" --password "${{ secrets.GITHUB_TOKEN }}"
+-      - run: gooci upload-single dist/bundle.tar.gz "ghcr.io/${{ github.repository }}:${{ github.ref_name }}"
++      - env:
++          GH_ACTOR: ${{ github.actor }}
++          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
++        run: gooci login ghcr.io --username "$GH_ACTOR" --password "$GH_TOKEN"
++      - env:
++          GH_REPOSITORY: ${{ github.repository }}
++          IMAGE_TAG: ${{ github.ref_name }}
++        run: gooci upload-single dist/bundle.tar.gz "ghcr.io/$GH_REPOSITORY:$IMAGE_TAG"
+```
+</details>
+
+<details>
+<summary>🧰 Tools</summary>
+
+<details>
+<summary>🪛 zizmor (1.25.2)</summary>
+
+[error] 29-29: code injection via template expansion (template-injection): may expand into attacker-controllable code
+
+(template-injection)
+
+---
+
+[warning] 29-29: code injection via template expansion (template-injection): may expand into attacker-controllable code
+
+(template-injection)
+
+---
+
+[warning] 30-30: code injection via template expansion (template-injection): may expand into attacker-controllable code
+
+(template-injection)
+
+---
+
+[error] 30-30: code injection via template expansion (template-injection): may expand into attacker-controllable code
+
+(template-injection)
+
+</details>
+
+</details>
+
+<details>
+<summary>🤖 Prompt for AI Agents</summary>
+
+```
+Verify each finding against current code. Fix only still-valid issues, skip the
+rest with a brief reason, keep changes minimal, and validate.
+
+In @.github/workflows/build-and-upload.yml around lines 29 - 30, The workflow in
+the run step inlines a GitHub expression into a shell command (the gooci
+upload-single command using "${{ github.ref_name }}"), which risks shell
+interpolation; change the step to export the values via env (e.g., set an
+environment variable like REF_NAME or REPO) and then reference that shell
+variable inside the run script, and do the same for any other expressions used
+in run steps (e.g., the gooci login step using "${{ github.actor }}" / "${{
+secrets.GITHUB_TOKEN }}") so that gooci upload-single and gooci login use secure
+shell variables instead of direct `${{ ... }}` interpolation.
+```
+
+</details>
+
+<!-- fingerprinting:phantom:poseidon:hawk -->
+
+<!-- This is an auto-generated comment by CodeRabbit -->
+Implementation guidance: Update .github/workflows/build-and-upload.yml so no shell run command directly embeds GitHub Actions expressions. For the gooci login step, change it from a single-line run using `${{ github.actor }}` and `${{ secrets.GITHUB_TOKEN }}` to a step with env entries such as GH_ACTOR: ${{ github.actor }} and GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}, then run `gooci login ghcr.io --username "$GH_ACTOR" --password "$GH_TOKEN"`. For the ref-tag upload step, set GH_REPOSITORY: ${{ github.repository }} and IMAGE_TAG: ${{ github.ref_name }} in that step's env and run `gooci upload-single dist/bundle.tar.gz "ghcr.io/$GH_REPOSITORY:$IMAGE_TAG"`. Also update the `latest` upload run command on the tag-only step to use GH_REPOSITORY from env rather than `${{ github.repository }}` directly in the run line. Leave the existing `if: ${{ startsWith(...) }}` condition as an Actions expression; the issue is expressions interpolated into shell scripts.
