@@ -1,0 +1,7 @@
+{
+  "minimum_availability_zones": 2,
+  "required_owner_tag_keys": ["owner", "team"],
+  "require_disposal_audit_events": false,
+  "require_management_audit_events": false,
+  "change_review_window_days": 90
+}
