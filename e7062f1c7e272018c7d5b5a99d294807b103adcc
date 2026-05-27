@@ -1,0 +1,17 @@
+lisa-addressed:
+---
+Comment (policies/elbv2_multi_az_redundancy.rego:49):
+violations MUST NOT be an array. They should instead be in the form of :
+```
+violation[{"id": "too_many_critical_vulnerabilities"}] if {
+	count(open_critical_alerts) >= 2
+}
+```
+
+please fix everywhere this happens.
+Replies:
+The flagged policy already uses the Rego v1 partial-set form `violation contains {"id": "insufficient_availability_zones"} if { ... }`, not an array-valued `violations := [...]` rule. I also checked the policy files and they consistently export `violation contains ...`; the only `violations :=` occurrence is a local variable in a test, not the policy output shape.
+Lisa that's not correct.
+
+`violation contains` is processed as a []interface by OPA, while `violation[{}]` is processed as a map[string]interfaace (what we need). The use of violation contains BREAKS the agent. This MUST be addressed.
+Implementation guidance: Replace every policy output rule head that currently uses Rego v1 `violation contains { ... } if { ... }` with the indexed rule-head form `violation[{ ... }] if { ... }`, because the agent expects the latter shape. Apply this only to policy rule declarations, not local test helper variables such as `violations := ...`. Specifically update policies/elbv2_multi_az_redundancy.rego line 49 to `violation[{"id": "insufficient_availability_zones"}] if { ... }`, and make the same mechanical rule-head change in policies/elbv2_ownership_tags.rego, policies/elbv2_management_change_audit_events.rego, policies/elbv2_asset_disposal.rego, and policies/elbv2_edge_endpoint_inventory.rego for each existing violation id. Preserve each rule body exactly, do not introduce array-valued `violations := [...]` outputs, and run `opa fmt -w policies` plus `opa test policies` after the edit.
