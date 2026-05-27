@@ -1,0 +1,789 @@
+lisa-addressed:
+---
+Comment (.github/workflows/build-and-upload.yml:15):
+_⚠️ Potential issue_ | _🟠 Major_ | _⚡ Quick win_
+
+<details>
+<summary>🧩 Analysis chain</summary>
+
+🌐 Web query:
+
+`What are the current commit SHAs for:
+- actions/checkout tag v4
+- actions/setup-go tag v5
+- open-policy-agent/setup-opa tag v2
+- softprops/action-gh-release tag v2
+Please provide immutable SHA pins for each.`
+
+💡 Result:
+
+Immutable SHA pins (commit hashes) for the requested action tags: - actions/checkout@v4: 2d7d9f7ff5b310f983d059b68785b3c74d8b8edd [1] - actions/setup-go@v5: 40f1582b2485089dde7abd97c1529aa768e1baff [2] - open-policy-agent/setup-opa@v2: (not found in the sources I retrieved) - softprops/action-gh-release@v2: (not found in the sources I retrieved) Note: my current web results include authoritative tag-to-commit pages for actions/checkout@v4 and actions/setup-go@v5, but did not surface the equivalent tag-to-commit pages for open-policy-agent/setup-opa@v2 or softprops/action-gh-release@v2 within the retrieved snippets. If you want, I can do one more targeted search to extract the exact immutable SHAs for those two tags.
+
+Citations:
+
+- 1: https://github.com/actions/checkout/tree/2d7d9f7ff5b310f983d059b68785b3c74d8b8edd
+- 2: https://github.com/actions/setup-go/commit/40f1582b2485089dde7abd97c1529aa768e1baff
+
+---
+
+🏁 Script executed:
+
+```shell
+#!/bin/bash
+set -euo pipefail
+
+ls -la .github/workflows || true
+sed -n '1,120p' .github/workflows/build-and-upload.yml | nl -ba | sed -n '1,120p'
+```
+
+Repository: compliance-framework/plugin-aws-elb-loadbalancer-policies
+
+Length of output: 515
+
+---
+
+🌐 Web query:
+
+`open-policy-agent/setup-opa v2 tag commit SHA`
+
+💡 Result:
+
+The open-policy-agent/setup-opa major version tag v2 currently maps to commit SHA 34a30e8a924d1b03ce2cf7abe97250bbb1f332b5 (example: setup-opa@34a30e8a924d1b03ce2cf7abe97250bbb1f332b5 # v2.2.0). [1][2] Note: the repo uses major-version tags (e.g., `@v2`) but GitHub Actions major tags may not always be implemented as a separate git tag; the mapping is effectively maintained by GitHub’s action version resolution. [1]
+
+Citations:
+
+- 1: https://github.com/open-policy-agent/setup-opa/issues/39
+- 2: https://github.com/antonbabenko/pre-commit-terraform/issues/730
+
+---
+
+🌐 Web query:
+
+`softprops/action-gh-release v2 tag commit SHA`
+
+💡 Result:
+
+The softprops/action-gh-release action uses floating tags (like v2, v3) rather than pinning to a single static commit SHA [1][2]. As of May 27, 2026, the v2 major tag refers to the latest release within the 2.x series (e.g., v2.6.2) [2]. Because these tags are mutable, they do not point to a single permanent commit SHA [2]. To ensure security and reproducibility in your workflows—especially given recent supply chain security concerns regarding mutable tag references [3][4]—it is recommended to pin the action to a specific, immutable commit SHA found in the action's repository history [3]. You can identify the current commit SHA for any specific version (such as v2.6.2) by: 1. Navigating to the Tags section of the softprops/action-gh-release GitHub repository [5]. 2. Selecting the desired version tag [5]. 3. Viewing the commit SHA associated with that tag in the repository's commit history or release page [6][5]. Using a specific commit SHA (e.g., uses: softprops/action-gh-release@<SHA>) prevents your workflow from automatically updating if the action maintainer updates the floating tag [3].
+
+Citations:
+
+- 1: https://github.com/softprops/action-gh-release/compare/softprops:7005cad...softprops:218a0ca
+- 2: https://github.com/softprops/action-gh-release/blob/master/CHANGELOG.md
+- 3: https://securityboulevard.com/2026/05/laravel-lang-composer-tag-rewrite-supply-chain-attack/
+- 4: https://winbuzzer.com/2026/05/26/megalodon-hit-5561-github-repos-through-malicious-workflows-xcxwbn/
+- 5: https://github.com/softprops/action-gh-release/releases/tag/v2.6.0
+- 6: https://github.com/softprops/action-gh-release/blob/288696be3916479e99fa944c72825e9b3e192be4/CHANGELOG.md
+
+---
+
+🏁 Script executed:
+
+```shell
+#!/bin/bash
+set -euo pipefail
+
+ls -la .github/workflows || true
+sed -n '1,140p' .github/workflows/build-and-upload.yml | nl -ba | sed -n '1,140p'
+```
+
+Repository: compliance-framework/plugin-aws-elb-loadbalancer-policies
+
+Length of output: 515
+
+---
+
+🌐 Web query:
+
+`open-policy-agent/setup-opa v2 tag commit SHA`
+
+💡 Result:
+
+The open-policy-agent/setup-opa GitHub Action does not have a static v2 tag that maps to a specific, immutable commit SHA [1]. Users of this action have noted that, unlike other actions (such as actions/checkout), the repository maintainers do not manage v2 as a moving tag [1]. Because there is no official v2 tag, using uses: open-policy-agent/setup-opa@v2 in a GitHub Actions workflow does not reliably resolve to a specific commit SHA, and Renovate or other automated dependency tools cannot look up a digest for it [1]. As a security best practice, users are encouraged to pin the action directly to a full commit SHA (e.g., open-policy-agent/setup-opa@<commit-sha>) rather than relying on a tag [1][2].
+
+Citations:
+
+- 1: https://github.com/open-policy-agent/setup-opa/issues/39
+- 2: https://medium.com/@adan.alvarez/github-actions-and-the-pinning-problem-what-100-security-projects-reveal-54a3a9dcc902
+
+---
+
+🌐 Web query:
+
+`softprops/action-gh-release v2 tag commit SHA`
+
+💡 Result:
+
+The “commit SHA” for the floating tag v2 is the repository commit that tag v2 currently points to; softprops/action-gh-release’s v2 line is pinned to the latest 2.x release (Node 20 compatible), with v3 being the Node 24 line [1]. From the official GitHub refs page for the tag, refs/tags/v2 points to the commit SHA: f12ad255e1c9d5cfd57d1ea9dca3e3001392be35 [2]. In your workflow, if you need to create the Git tag/release from a specific commit, use the action input target_commitish, which accepts a branch or commit SHA [3][4].
+
+Citations:
+
+- 1: https://github.com/softprops/action-gh-release/compare/softprops:7005cad...softprops:218a0ca
+- 2: https://github.com/softprops/action-gh-release/tree/refs/tags/v2
+- 3: https://github.com/softprops/action-gh-release
+- 4: https://github.com/softprops/action-gh-release/tree/v2.0.6
+
+---
+
+🏁 Script executed:
+
+```shell
+#!/bin/bash
+set -euo pipefail
+
+ls -la .github/workflows || true
+sed -n '1,140p' .github/workflows/build-and-upload.yml | nl -ba | sed -n '1,140p'
+```
+
+Repository: compliance-framework/plugin-aws-elb-loadbalancer-policies
+
+Length of output: 515
+
+---
+
+🌐 Web query:
+
+`open-policy-agent/setup-opa v2 tag commit SHA`
+
+💡 Result:
+
+open-policy-agent/setup-opa v2 → commit SHA: Not determinable from the public sources I found. What I could confirm: 1) “v2” is used as a GitHub Actions workflow pin (e.g., `uses: open-policy-agent/setup-opa@v2`). [1] 2) The repository has releases under the `v2.x.y` scheme (latest shown as v2.4.0, dated 2026-04-21). [2][3] 3) However, none of the retrieved sources explicitly state the exact Git commit SHA that corresponds to the tag name `v2` (as distinct from the `v2.x.y` release tags). [2][3][1] If you want, tell me whether you mean: A) the lightweight/annotated Git tag literally named `v2`, or B) the commit used by the semver “v2” major pin as resolved by GitHub (which effectively maps to some concrete commit). Either way, I can fetch the exact tag-to-commit mapping if we run a more targeted lookup on the tag reference (e.g., GitHub tag page for `v2` or the tag’s `target_commitish`).
+
+Citations:
+
+- 1: https://github.com/open-policy-agent/setup-opa/tree/refs/heads/main
+- 2: https://github.com/open-policy-agent/setup-opa
+- 3: https://github.com/open-policy-agent/setup-opa/releases
+
+---
+
+🌐 Web query:
+
+`softprops/action-gh-release v2 tag commit SHA`
+
+💡 Result:
+
+For softprops/action-gh-release v2, the action code is pinned to the Git commit that corresponds to the v2 tag/ref in the repository. Specifically, the v2 ref is at GitHub ref `refs/tags/v2`, and GitHub associates that tag with a concrete commit SHA in the repository history shown at that ref path [1]. From the v2 tag page, the commit SHA for `refs/tags/v2` is: - f12ad255e1c9d5cfd57d1ea9dca3e3001392be35 [2]. Notes: - The `@v2` syntax in workflows means GitHub resolves it to that pinned tag ref’s commit SHA at use time (rather than using the latest commit on the default branch) [1].
+
+Citations:
+
+- 1: https://github.com/softprops/action-gh-release/tree/refs/tags/v2
+- 2: https://github.com/softprops/action-gh-release/tree/f12ad255e1c9d5cfd57d1ea9dca3e3001392be35
+
+---
+
+🏁 Script executed:
+
+```shell
+#!/bin/bash
+set -euo pipefail
+
+awk '{print NR "\t" $0}' .github/workflows/build-and-upload.yml | sed -n '1,140p'
+```
+
+Repository: compliance-framework/plugin-aws-elb-loadbalancer-policies
+
+Length of output: 1135
+
+---
+
+🏁 Script executed:
+
+```shell
+#!/bin/bash
+set -euo pipefail
+
+rg -n "uses:\s" .github/workflows/build-and-upload.yml
+```
+
+Repository: compliance-framework/plugin-aws-elb-loadbalancer-policies
+
+Length of output: 271
+
+---
+
+</details>
+
+**Pin GitHub Actions to full commit SHAs (supply-chain hardening)**
+
+`.github/workflows/build-and-upload.yml` still uses mutable action tags:
+- line 14: `actions/checkout@v4` → `actions/checkout@2d7d9f7ff5b310f983d059b68785b3c74d8b8edd`
+- line 15: `actions/setup-go@v5` → `actions/setup-go@40f1582b2485089dde7abd97c1529aa768e1baff`
+- line 18: `open-policy-agent/setup-opa@v2` → replace with the concrete commit SHA for the resolved `v2` pin (the v2→commit mapping isn’t reliably determinable from the public sources I found)
+- line 22: `softprops/action-gh-release@v2` → `softprops/action-gh-release@f12ad255e1c9d5cfd57d1ea9dca3e3001392be35`
+
+<details>
+<summary>🧰 Tools</summary>
+
+<details>
+<summary>🪛 zizmor (1.25.2)</summary>
+
+[warning] 14-14: credential persistence through GitHub Actions artifacts (artipacked): does not set persist-credentials: false
+
+(artipacked)
+
+---
+
+[error] 14-14: unpinned action reference (unpinned-uses): action is not pinned to a hash (required by blanket policy)
+
+(unpinned-uses)
+
+---
+
+[error] 15-15: unpinned action reference (unpinned-uses): action is not pinned to a hash (required by blanket policy)
+
+(unpinned-uses)
+
+---
+
+[error] 15-15: runtime artifacts potentially vulnerable to a cache poisoning attack (cache-poisoning): enables caching by default
+
+(cache-poisoning)
+
+</details>
+
+</details>
+
+<details>
+<summary>🤖 Prompt for AI Agents</summary>
+
+```
+Verify each finding against current code. Fix only still-valid issues, skip the
+rest with a brief reason, keep changes minimal, and validate.
+
+In @.github/workflows/build-and-upload.yml around lines 14 - 15, Replace mutable
+action tags with pinned commit SHAs: update the actions/checkout@v4 reference to
+actions/checkout@2d7d9f7ff5b310f983d059b68785b3c74d8b8edd and
+actions/setup-go@v5 to
+actions/setup-go@40f1582b2485089dde7abd97c1529aa768e1baff; for
+open-policy-agent/setup-opa@v2 locate the exact commit SHA that corresponds to
+the v2 tag in the repository and replace the tag with that SHA, and replace
+softprops/action-gh-release@v2 with
+softprops/action-gh-release@f12ad255e1c9d5cfd57d1ea9dca3e3001392be35 so each
+uses the full immutable commit reference instead of a mutable tag.
+```
+
+</details>
+
+<!-- fingerprinting:phantom:poseidon:hawk -->
+
+<!-- This is an auto-generated comment by CodeRabbit -->
+---
+Comment (.github/workflows/build-and-upload.yml:25):
+_⚠️ Potential issue_ | _🟠 Major_ | _⚡ Quick win_
+
+<details>
+<summary>🧩 Analysis chain</summary>
+
+🏁 Script executed:
+
+```shell
+#!/bin/bash
+# Verify mutable installation usage in workflows
+rg -nP 'go install\s+github\.com/compliance-framework/gooci@latest' .github/workflows/build-and-upload.yml
+```
+
+Repository: compliance-framework/plugin-aws-elb-loadbalancer-policies
+
+Length of output: 173
+
+---
+
+</details>
+
+**Pin `gooci` to an immutable version instead of `@latest`**
+
+`.github/workflows/build-and-upload.yml` installs `go install github.com/compliance-framework/gooci@latest` (line 25), making builds non-reproducible and increasing supply-chain risk.
+
+<details>
+<summary>Suggested change</summary>
+
+```diff
+-      - run: go install github.com/compliance-framework/gooci@latest
++      - run: go install github.com/compliance-framework/gooci@vX.Y.Z
+```
+</details>
+
+<details>
+<summary>🤖 Prompt for AI Agents</summary>
+
+```
+Verify each finding against current code. Fix only still-valid issues, skip the
+rest with a brief reason, keep changes minimal, and validate.
+
+In @.github/workflows/build-and-upload.yml at line 25, The workflow currently
+installs gooci using the floating tag "go install
+github.com/compliance-framework/gooci@latest"; change this to pin to a specific
+immutable version (use a released semver tag like `@vX.Y.Z` or a commit hash) so
+builds are reproducible and reduce supply-chain risk—update the step that runs
+the "go install github.com/compliance-framework/gooci@latest" command to use the
+chosen immutable tag instead.
+```
+
+</details>
+
+<!-- fingerprinting:phantom:poseidon:hawk -->
+
+<!-- This is an auto-generated comment by CodeRabbit -->
+---
+Comment (.github/workflows/build-and-upload.yml:29):
+_⚠️ Potential issue_ | _🟠 Major_ | _⚡ Quick win_
+
+<details>
+<summary>🧩 Analysis chain</summary>
+
+🏁 Script executed:
+
+```shell
+#!/bin/bash
+# Verify caller trigger and callee condition mismatch
+rg -n 'github\.event\.release\.prerelease' .github/workflows/build-and-upload.yml
+rg -nP 'on:\n\s+push:\n\s+tags:' .github/workflows/release.yml
+```
+
+Repository: compliance-framework/plugin-aws-elb-loadbalancer-policies
+
+Length of output: 156
+
+---
+
+🏁 Script executed:
+
+```shell
+#!/bin/bash
+set -euo pipefail
+
+echo "---- build-and-upload.yml (lines 1-80) ----"
+nl -ba .github/workflows/build-and-upload.yml | sed -n '1,120p'
+
+echo "---- release.yml (full file or first 200 lines) ----"
+if [ "$(wc -l < .github/workflows/release.yml)" -le 200 ]; then
+  nl -ba .github/workflows/release.yml
+else
+  nl -ba .github/workflows/release.yml | sed -n '1,200p'
+fi
+```
+
+Repository: compliance-framework/plugin-aws-elb-loadbalancer-policies
+
+Length of output: 206
+
+---
+
+🏁 Script executed:
+
+```shell
+#!/bin/bash
+set -euo pipefail
+
+echo "---- workflows directory listing ----"
+ls -la .github/workflows || true
+
+echo "---- build-and-upload.yml (around the if at ~28) ----"
+# Print 20-45 lines using cat -n; fallback if file shorter
+if [ -f .github/workflows/build-and-upload.yml ]; then
+  cat -n .github/workflows/build-and-upload.yml | sed -n '20,60p'
+else
+  echo "Missing: .github/workflows/build-and-upload.yml"
+fi
+
+echo "---- release.yml (full or first 200 lines) ----"
+if [ -f .github/workflows/release.yml ]; then
+  wc -l .github/workflows/release.yml
+  cat -n .github/workflows/release.yml | sed -n '1,220p'
+else
+  echo "Missing: .github/workflows/release.yml"
+fi
+```
+
+Repository: compliance-framework/plugin-aws-elb-loadbalancer-policies
+
+Length of output: 1520
+
+---
+
+🏁 Script executed:
+
+```shell
+#!/bin/bash
+set -euo pipefail
+
+echo "---- build-and-upload.yml (top 120 lines) ----"
+wc -l .github/workflows/build-and-upload.yml
+sed -n '1,120p' .github/workflows/build-and-upload.yml | nl -ba | sed -n '1,120p' || true
+
+echo "---- build-and-upload.yml (grep on: workflow_call / on:) ----"
+rg -n '^\s*on:|workflow_call|release:' .github/workflows/build-and-upload.yml || true
+
+echo "---- build-and-upload.yml (lines 1-60 without nl) ----"
+sed -n '1,60p' .github/workflows/build-and-upload.yml
+```
+
+Repository: compliance-framework/plugin-aws-elb-loadbalancer-policies
+
+Length of output: 1347
+
+---
+
+🏁 Script executed:
+
+```shell
+#!/bin/bash
+set -euo pipefail
+rg -n "uses:\s*\./\.github/workflows/build-and-upload\.yml" .github/workflows || true
+```
+
+Repository: compliance-framework/plugin-aws-elb-loadbalancer-policies
+
+Length of output: 185
+
+---
+
+</details>
+
+**`.github/workflows/build-and-upload.yml` publishes `:latest` using a release-only field in a tag-push workflow.**
+
+File: `.github/workflows/build-and-upload.yml` (lines 28-29)
+This reusable workflow (`on: workflow_call`) is only invoked by `.github/workflows/release.yml`, which runs on `push.tags`. In that context, `github.event.release.prerelease` is not set, so the condition `!github.event.release.prerelease` can evaluate truthy and publish `ghcr.io/${{ github.repository }}:latest` for prerelease tags too.
+
+<details>
+<summary>Suggested change (tag-convention gate)</summary>
+
+```diff
+-      - if: ${{ !github.event.release.prerelease }}
++      - if: ${{ !contains(github.ref_name, '-') }}
+         run: gooci upload-single dist/bundle.tar.gz "ghcr.io/${{ github.repository }}:latest"
+```
+</details>
+
+<!-- suggestion_start -->
+
+<details>
+<summary>📝 Committable suggestion</summary>
+
+> ‼️ **IMPORTANT**
+> Carefully review the code before committing. Ensure that it accurately replaces the highlighted code, contains no missing lines, and has no issues with indentation. Thoroughly test & benchmark the code to ensure it meets the requirements.
+
+```suggestion
+      - if: ${{ !contains(github.ref_name, '-') }}
+        run: gooci upload-single dist/bundle.tar.gz "ghcr.io/${{ github.repository }}:latest"
+```
+
+</details>
+
+<!-- suggestion_end -->
+
+<details>
+<summary>🧰 Tools</summary>
+
+<details>
+<summary>🪛 zizmor (1.25.2)</summary>
+
+[warning] 29-29: code injection via template expansion (template-injection): may expand into attacker-controllable code
+
+(template-injection)
+
+</details>
+
+</details>
+
+<details>
+<summary>🤖 Prompt for AI Agents</summary>
+
+```
+Verify each finding against current code. Fix only still-valid issues, skip the
+rest with a brief reason, keep changes minimal, and validate.
+
+In @.github/workflows/build-and-upload.yml around lines 28 - 29, The if
+condition that gates publishing :latest uses github.event.release.prerelease
+which is undefined in a tag-push caller; update the step that runs gooci
+upload-single to instead ensure the workflow is running on a proper
+non-prerelease tag by replacing the condition with a tag-name check such as
+verifying the ref is a tag and has no prerelease suffix (for example: if:
+startsWith(github.ref, 'refs/tags/') && !contains(github.ref_name, '-')) or use
+a semver-only regex match (e.g., matches(github.ref_name,
+'^v?\\d+\\.\\d+\\.\\d+$')) so prerelease tags (with hyphens or pre identifiers)
+do not publish :latest.
+```
+
+</details>
+
+<!-- fingerprinting:phantom:poseidon:hawk -->
+
+<!-- This is an auto-generated comment by CodeRabbit -->
+---
+Comment (.github/workflows/test.yml:1):
+_⚠️ Potential issue_ | _🟠 Major_ | _⚡ Quick win_
+
+**Constrain token scope and disable persisted checkout credentials in tests.**
+
+This workflow only needs read access; default/broader token scope plus persisted credentials increases blast radius.
+
+<details>
+<summary>Suggested change</summary>
+
+```diff
+ name: Test
+
+ on:
+   workflow_call:
+
++permissions:
++  contents: read
++
+ jobs:
+   test:
+     runs-on: ubuntu-latest
+     steps:
+-      - uses: actions/checkout@v4
++      - uses: actions/checkout@v4
++        with:
++          persist-credentials: false
+```
+</details>
+
+Also applies to: 10-10
+
+<details>
+<summary>🧰 Tools</summary>
+
+<details>
+<summary>🪛 zizmor (1.25.2)</summary>
+
+[warning] 1-17: overly broad permissions (excessive-permissions): default permissions used due to no permissions: block
+
+(excessive-permissions)
+
+</details>
+
+</details>
+
+<details>
+<summary>🤖 Prompt for AI Agents</summary>
+
+```
+Verify each finding against current code. Fix only still-valid issues, skip the
+rest with a brief reason, keep changes minimal, and validate.
+
+In @.github/workflows/test.yml at line 1, The Test workflow currently uses
+default token scopes and persisted checkout credentials; change the workflow to
+explicitly set minimal token permissions (e.g., add a top-level permissions
+block with contents: read and other needed read-only scopes) and disable
+persisted credentials in checkout steps (set persist-credentials: false on
+actions/checkout@v3). Locate the workflow named "Test" and update the top-level
+permissions and each checkout step (actions/checkout@v3) to tighten token scope
+and set persist-credentials: false.
+```
+
+</details>
+
+<!-- fingerprinting:phantom:poseidon:hawk -->
+
+<!-- This is an auto-generated comment by CodeRabbit -->
+---
+Comment (.github/workflows/test.yml:11):
+_⚠️ Potential issue_ | _🟠 Major_ | _⚡ Quick win_
+
+<details>
+<summary>🧩 Analysis chain</summary>
+
+🌐 Web query:
+
+`What immutable commit SHAs should be used to pin:
+- actions/checkout@v4
+- open-policy-agent/setup-opa@v2
+?`
+
+💡 Result:
+
+Use the full, immutable commit SHA (not the moving version tag) for the specific major version you intend to allow. 1) actions/checkout@v4 - Pin to: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955 [1][2] 2) open-policy-agent/setup-opa@v2 - Pin to: open-policy-agent/setup-opa@34a30e8a924d1b03ce2cf7abe97250bbb1f332b5 [3] Why these answers: the immutable SHA for a tagged GitHub Action corresponds to the commit object the tag points to; pinning by commit SHA prevents the workflow from changing when the tag is updated. For checkout, the v4.3.0 release points at commit 08eba0b27e820071cde6df949e0beb9ba4906955. For setup-opa, the v2 pin corresponds to digest 34a30e8a924d1b03ce2cf7abe97250bbb1f332b5 as shown by renovate config/output in the project’s issue discussion.
+
+Citations:
+
+- 1: https://redirect.github.com/actions/checkout/releases/tag/v4.3.0
+- 2: https://github.com/actions/checkout/compare/11bd71901bbe5b1630ceea73d27597364c9af683...08eba0b27e820071cde6df949e0beb9ba4906955
+- 3: https://github.com/open-policy-agent/setup-opa/issues/39
+
+---
+
+</details>
+
+**Pin GitHub Actions to immutable commit SHAs.**
+
+Mutable action tags in CI reduce supply-chain integrity guarantees. In `.github/workflows/test.yml` (lines 10-11), pin:
+- `actions/checkout@v4` → `actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955`
+- `open-policy-agent/setup-opa@v2` → `open-policy-agent/setup-opa@34a30e8a924d1b03ce2cf7abe97250bbb1f332b5`
+
+<details>
+<summary>🧰 Tools</summary>
+
+<details>
+<summary>🪛 zizmor (1.25.2)</summary>
+
+[warning] 10-10: credential persistence through GitHub Actions artifacts (artipacked): does not set persist-credentials: false
+
+(artipacked)
+
+---
+
+[error] 10-10: unpinned action reference (unpinned-uses): action is not pinned to a hash (required by blanket policy)
+
+(unpinned-uses)
+
+---
+
+[error] 11-11: unpinned action reference (unpinned-uses): action is not pinned to a hash (required by blanket policy)
+
+(unpinned-uses)
+
+</details>
+
+</details>
+
+<details>
+<summary>🤖 Prompt for AI Agents</summary>
+
+```
+Verify each finding against current code. Fix only still-valid issues, skip the
+rest with a brief reason, keep changes minimal, and validate.
+
+In @.github/workflows/test.yml around lines 10 - 11, Update the workflow to pin
+the mutable action tags to immutable commit SHAs: replace uses:
+actions/checkout@v4 with uses:
+actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955 and replace uses:
+open-policy-agent/setup-opa@v2 with uses:
+open-policy-agent/setup-opa@34a30e8a924d1b03ce2cf7abe97250bbb1f332b5 so the
+actions/checkout and open-policy-agent/setup-opa references are fixed to the
+provided SHAs.
+```
+
+</details>
+
+<!-- fingerprinting:phantom:poseidon:hawk -->
+
+<!-- This is an auto-generated comment by CodeRabbit -->
+---
+Comment (Makefile:6):
+_⚠️ Potential issue_ | _🟡 Minor_ | _⚡ Quick win_
+
+**Use strict validation in `make validate` to match CI/README.**
+
+`make validate` currently allows cases that CI rejects with `opa check --strict`.
+
+<details>
+<summary>Suggested change</summary>
+
+```diff
+ validate:    ## Lint/parse policies
+-	`@opa` check policies
++	`@opa` check --strict policies
+```
+</details>
+
+<!-- suggestion_start -->
+
+<details>
+<summary>📝 Committable suggestion</summary>
+
+> ‼️ **IMPORTANT**
+> Carefully review the code before committing. Ensure that it accurately replaces the highlighted code, contains no missing lines, and has no issues with indentation. Thoroughly test & benchmark the code to ensure it meets the requirements.
+
+```suggestion
+validate:    ## Lint/parse policies
+	`@opa` check --strict policies
+```
+
+</details>
+
+<!-- suggestion_end -->
+
+<details>
+<summary>🤖 Prompt for AI Agents</summary>
+
+```
+Verify each finding against current code. Fix only still-valid issues, skip the
+rest with a brief reason, keep changes minimal, and validate.
+
+In `@Makefile` around lines 4 - 6, The validate Makefile target currently runs
+"opa check policies" which is laxer than CI/README; update the validate recipe
+for the validate target to run OPA in strict mode (add the --strict flag) so it
+matches CI/README (i.e., change the command invoked by the validate target to
+use "opa check --strict policies").
+```
+
+</details>
+
+<!-- fingerprinting:phantom:poseidon:hawk -->
+
+<!-- This is an auto-generated comment by CodeRabbit -->
+---
+Comment (policies/elbv2_management_change_audit_events_test.rego:66):
+_🧹 Nitpick_ | _🔵 Trivial_ | _⚡ Quick win_
+
+**Consider adding a test case for unparseable timestamps.**
+
+The test suite comprehensively covers all three violation types and configuration scenarios. However, adding a test case for malformed timestamps would explicitly document the staleness detection behavior when `event_time` values cannot be parsed (triggering the policy's lines 87-90).
+
+<details>
+<summary>📋 Suggested additional test case</summary>
+
+```rego
+test_management_event_with_malformed_timestamp_stale if {
+	inp := {
+		"resource": {"type": "loadbalancer", "id": "lb-1"},
+		"dynamic": {"cloudtrail_events": [{
+			"event_name": "ModifyListener",
+			"event_time": "not-a-valid-timestamp",
+			"user_identity_arn": "arn:aws:iam::123456789012:role/admin",
+		}]},
+	}
+	data.compliance_framework.elbv2_management_change_audit_events.violation[{"id": "management_event_stale"}] with input as inp with data.require_management_audit_events as true
+}
+```
+
+This test would validate that when management events exist but have unparseable timestamps, the policy correctly treats them as stale (since no valid `event_times` can be extracted).
+</details>
+
+<details>
+<summary>🧰 Tools</summary>
+
+<details>
+<summary>🪛 Regal (0.40.0)</summary>
+
+[error] 1-1: Directory structure should mirror package
+
+(idiomatic)
+
+</details>
+
+</details>
+
+<details>
+<summary>🤖 Prompt for AI Agents</summary>
+
+```
+Verify each finding against current code. Fix only still-valid issues, skip the
+rest with a brief reason, keep changes minimal, and validate.
+
+In `@policies/elbv2_management_change_audit_events_test.rego` around lines 1 - 66,
+Add a new unit test named test_management_event_with_malformed_timestamp_stale
+that supplies a loadbalancer resource with a cloudtrail_events entry whose
+event_time is an invalid string (e.g. "not-a-valid-timestamp") and
+user_identity_arn set, then assert that
+data.compliance_framework.elbv2_management_change_audit_events.violation
+contains {"id":"management_event_stale"} when run with
+data.require_management_audit_events as true (optionally include data.now
+similar to other stale tests to keep timing deterministic).
+```
+
+</details>
+
+<!-- fingerprinting:phantom:poseidon:puma -->
+
+<!-- This is an auto-generated comment by CodeRabbit -->
+Implementation guidance: In .github/workflows/build-and-upload.yml, replace every third-party action tag in jobs.build-and-upload.steps with a full commit SHA: actions/checkout@v4, actions/setup-go@v5, open-policy-agent/setup-opa@v2, and softprops/action-gh-release@v2. Before editing, resolve the current intended tag commits from the upstream repositories, preferably with `git ls-remote https://github.com/<owner>/<repo>.git refs/tags/<tag> refs/tags/<tag>^{}` and use the peeled commit SHA when an annotated tag is returned. Do not leave any `uses:` reference in this workflow pinned only to a mutable major tag. Preserve existing inputs, permissions, and step ordering.
+Implementation guidance: In .github/workflows/build-and-upload.yml, change the `go install github.com/compliance-framework/gooci@latest` step to install an immutable version. Resolve the available released versions with `go list -m -versions github.com/compliance-framework/gooci` and pin to the latest appropriate released semver tag, or to a full commit pseudo-version if no release tag exists. Keep the command as a single `go install github.com/compliance-framework/gooci@<pinned-version>` step and do not otherwise alter the upload/login commands.
+Implementation guidance: In .github/workflows/build-and-upload.yml, update the final `gooci upload-single ...:latest` step so it does not rely on `github.event.release.prerelease`, because this reusable workflow is invoked by .github/workflows/release.yml on tag push events where that field is absent. Gate the step on the current ref being a tag and the tag name not containing a prerelease hyphen, for example `if: ${{ startsWith(github.ref, 'refs/tags/') && !contains(github.ref_name, '-') }}`. Preserve the existing upload command and keep prerelease tags such as `v1.2.3-rc.1` from publishing `:latest`.
+Implementation guidance: In .github/workflows/test.yml, add a top-level `permissions:` block with `contents: read` so the reusable Test workflow uses minimal token scope. Also update the checkout step under jobs.test.steps to set `with: { persist-credentials: false }` using normal YAML block style. The checkout action is currently v4 and may also be pinned by another review item; apply `persist-credentials: false` to whichever pinned checkout reference remains after that change.
+Implementation guidance: In .github/workflows/test.yml, pin the mutable action references in jobs.test.steps to full commit SHAs: replace `actions/checkout@v4` and `open-policy-agent/setup-opa@v2` with immutable commit references. Resolve the exact intended tag commits from upstream before editing, preferably with `git ls-remote https://github.com/actions/checkout.git refs/tags/v4 refs/tags/v4^{}` and `git ls-remote https://github.com/open-policy-agent/setup-opa.git refs/tags/v2 refs/tags/v2^{}`; use the peeled commit SHA for annotated tags. Preserve the existing OPA `version: 1.6.0` input and coordinate with the separate checkout hardening item so the pinned checkout step still has `persist-credentials: false`.
+Implementation guidance: In Makefile, update the `validate` target recipe from `@opa check policies` to `@opa check --strict policies` so the local validation target matches the CI command. Do not change the `test`, `clean`, or `build` targets.
+Implementation guidance: In policies/elbv2_management_change_audit_events_test.rego, add a focused unit test named `test_management_event_with_malformed_timestamp_stale`. Build an input loadbalancer with one management CloudTrail event, such as `ModifyListener`, whose `event_time` is an invalid string like `not-a-valid-timestamp` and whose `user_identity_arn` is non-empty. Assert that `data.compliance_framework.elbv2_management_change_audit_events.violation[{"id": "management_event_stale"}]` is true with `input` set to that object, `data.require_management_audit_events` set to true, and `data.now` set to a deterministic parsed timestamp like the other stale tests. Do not change the policy behavior; this is only coverage for the existing `count(event_times) == 0` staleness path.
