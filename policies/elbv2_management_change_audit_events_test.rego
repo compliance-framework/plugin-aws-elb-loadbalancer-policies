@@ -47,6 +47,18 @@ test_management_event_stale_violation if {
 	data.compliance_framework.elbv2_management_change_audit_events.violation[{"id": "management_event_stale"}] with input as inp with data.require_management_audit_events as true with data.now as time.parse_rfc3339_ns("2026-05-27T00:00:00Z")
 }
 
+test_management_event_with_malformed_timestamp_stale if {
+	inp := {
+		"resource": {"type": "loadbalancer", "id": "lb-1"},
+		"dynamic": {"cloudtrail_events": [{
+			"event_name": "ModifyListener",
+			"event_time": "not-a-valid-timestamp",
+			"user_identity_arn": "arn:aws:iam::123456789012:role/admin",
+		}]},
+	}
+	data.compliance_framework.elbv2_management_change_audit_events.violation[{"id": "management_event_stale"}] with input as inp with data.require_management_audit_events as true with data.now as time.parse_rfc3339_ns("2026-05-27T00:00:00Z")
+}
+
 test_non_default_review_window if {
 	inp := {
 		"resource": {"type": "loadbalancer", "id": "lb-1"},
