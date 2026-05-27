@@ -5,7 +5,7 @@ package compliance_framework.elbv2_asset_disposal
 # description: Checks whether non-active load balancers have deletion audit evidence when disposal audit enforcement is enabled.
 # custom:
 #   metric_ids:
-#     - ACM_TLS_ENDPOINTS
+#     - ELBV2_ASSET_DISPOSAL
 #   controls:
 #     - ctrl-cc6-5-001
 #     - ctrl-cc6-7-003
@@ -40,6 +40,7 @@ resource_id := object.get(resource, "id", "unknown")
 state := object.get(config, "state", "")
 events := object.get(dynamic, "cloudtrail_events", [])
 require_disposal_audit_events := data.require_disposal_audit_events
+disposal_delete_event_names := data.disposal_delete_event_names
 
 skip_reason := sprintf("Resource type %q is not a load balancer; this policy only applies to loadbalancer records.", [resource_type]) if {
 	not resource_type == "loadbalancer"
@@ -55,7 +56,7 @@ active_or_provisioning_state if {
 delete_event_exists if {
 	event := events[_]
 	event_name := object.get(event, "event_name", "")
-	startswith(event_name, "Delete")
+	event_name in disposal_delete_event_names
 }
 
 violation contains {"id": "disposal_process_unverified"} if {

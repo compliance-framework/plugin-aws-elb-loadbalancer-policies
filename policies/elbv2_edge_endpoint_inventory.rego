@@ -38,12 +38,17 @@ scheme := object.get(config, "scheme", "")
 dns_name := object.get(config, "dns_name", "")
 tags := object.get(input, "tags", {})
 required_owner_tag_keys := data.required_owner_tag_keys
+unknown_endpoint_scheme_action := data.unknown_endpoint_scheme_action
 
 skip_reason := sprintf("Resource type %q is not a load balancer; this policy only applies to loadbalancer records.", [resource_type]) if {
 	not resource_type == "loadbalancer"
 } else := sprintf("Load balancer %s is internal; edge endpoint inventory applies only to internet-facing load balancers.", [resource_id]) if {
 	resource_type == "loadbalancer"
 	scheme == "internal"
+} else := sprintf("Load balancer %s has unknown scheme %q; edge endpoint inventory applies only when the scheme is known.", [resource_id, scheme]) if {
+	resource_type == "loadbalancer"
+	unknown_scheme
+	unknown_endpoint_scheme_action == "skip"
 }
 
 title := sprintf("Validate ELBv2 edge endpoint inventory for %s", [resource_id])
@@ -59,14 +64,25 @@ dns_name_present if {
 	trim(dns_name, " \t\r\n") != ""
 }
 
-violation contains {"id": "endpoint_not_inventoried"} if {
+unknown_scheme if {
+	not scheme == "internet-facing"
+	not scheme == "internal"
+}
+
+violation contains {"id": "dns_not_inventoried"} if {
 	resource_type == "loadbalancer"
 	scheme == "internet-facing"
 	not dns_name_present
 }
 
-violation contains {"id": "endpoint_not_inventoried"} if {
+violation contains {"id": "owner_not_identified"} if {
 	resource_type == "loadbalancer"
 	scheme == "internet-facing"
 	not owner_tag_present
+}
+
+violation contains {"id": "scheme_unknown"} if {
+	resource_type == "loadbalancer"
+	unknown_scheme
+	not unknown_endpoint_scheme_action == "skip"
 }

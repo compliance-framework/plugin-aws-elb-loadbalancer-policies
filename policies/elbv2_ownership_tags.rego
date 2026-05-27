@@ -5,7 +5,7 @@ package compliance_framework.elbv2_ownership_tags
 # description: Checks whether a load balancer has a required non-empty ownership tag.
 # custom:
 #   metric_ids:
-#     - ACM_TLS_ENDPOINTS
+#     - ELBV2_OWNERSHIP_TAGS
 #   controls:
 #     - ctrl-cc6-7-017
 risk_templates := [{

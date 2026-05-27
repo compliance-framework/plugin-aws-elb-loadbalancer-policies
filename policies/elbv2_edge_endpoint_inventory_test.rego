@@ -15,7 +15,7 @@ test_missing_dns_violation if {
 		"config": {"scheme": "internet-facing", "dns_name": ""},
 		"tags": {"owner": "platform"},
 	}
-	count(data.compliance_framework.elbv2_edge_endpoint_inventory.violation) == 1 with input as inp
+	data.compliance_framework.elbv2_edge_endpoint_inventory.violation[{"id": "dns_not_inventoried"}] with input as inp
 }
 
 test_missing_owner_violation if {
@@ -24,7 +24,19 @@ test_missing_owner_violation if {
 		"config": {"scheme": "internet-facing", "dns_name": "lb.example.elb.amazonaws.com"},
 		"tags": {},
 	}
-	count(data.compliance_framework.elbv2_edge_endpoint_inventory.violation) == 1 with input as inp
+	data.compliance_framework.elbv2_edge_endpoint_inventory.violation[{"id": "owner_not_identified"}] with input as inp
+}
+
+test_missing_dns_and_owner_returns_two_violations if {
+	inp := {
+		"resource": {"type": "loadbalancer", "id": "lb-1"},
+		"config": {"scheme": "internet-facing", "dns_name": ""},
+		"tags": {},
+	}
+	violations := data.compliance_framework.elbv2_edge_endpoint_inventory.violation with input as inp
+	violations[{"id": "dns_not_inventoried"}]
+	violations[{"id": "owner_not_identified"}]
+	count(violations) == 2
 }
 
 test_internal_loadbalancer_skipped if {
@@ -34,6 +46,31 @@ test_internal_loadbalancer_skipped if {
 	}
 	count(data.compliance_framework.elbv2_edge_endpoint_inventory.violation) == 0 with input as inp
 	data.compliance_framework.elbv2_edge_endpoint_inventory.skip_reason with input as inp
+}
+
+test_missing_scheme_violation if {
+	inp := {
+		"resource": {"type": "loadbalancer", "id": "lb-1"},
+		"config": {},
+	}
+	data.compliance_framework.elbv2_edge_endpoint_inventory.violation[{"id": "scheme_unknown"}] with input as inp
+}
+
+test_unexpected_scheme_violation if {
+	inp := {
+		"resource": {"type": "loadbalancer", "id": "lb-1"},
+		"config": {"scheme": "private"},
+	}
+	data.compliance_framework.elbv2_edge_endpoint_inventory.violation[{"id": "scheme_unknown"}] with input as inp
+}
+
+test_unknown_scheme_can_be_configured_to_skip if {
+	inp := {
+		"resource": {"type": "loadbalancer", "id": "lb-1"},
+		"config": {"scheme": "private"},
+	}
+	count(data.compliance_framework.elbv2_edge_endpoint_inventory.violation) == 0 with input as inp with data.unknown_endpoint_scheme_action as "skip"
+	data.compliance_framework.elbv2_edge_endpoint_inventory.skip_reason with input as inp with data.unknown_endpoint_scheme_action as "skip"
 }
 
 test_non_default_owner_key if {

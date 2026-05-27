@@ -5,7 +5,7 @@ package compliance_framework.elbv2_management_change_audit_events
 # description: Checks whether listener and rule management changes are present, attributable, and timely when management audit enforcement is enabled.
 # custom:
 #   metric_ids:
-#     - ACM_TLS_ENDPOINTS
+#     - ELBV2_MANAGEMENT_CHANGE_AUDIT_EVENTS
 #   controls:
 #     - ctrl-cc6-2-015
 #     - ctrl-cc6-2-019
