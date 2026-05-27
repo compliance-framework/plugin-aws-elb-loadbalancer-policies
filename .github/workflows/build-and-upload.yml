@@ -26,7 +26,15 @@ jobs:
         with:
           files: dist/bundle.tar.gz
       - run: go install github.com/compliance-framework/gooci@v0.0.7
-      - run: gooci login ghcr.io --username "${{ github.actor }}" --password "${{ secrets.GITHUB_TOKEN }}"
-      - run: gooci upload-single dist/bundle.tar.gz "ghcr.io/${{ github.repository }}:${{ github.ref_name }}"
+      - env:
+          GH_ACTOR: ${{ github.actor }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: gooci login ghcr.io --username "$GH_ACTOR" --password "$GH_TOKEN"
+      - env:
+          GH_REPOSITORY: ${{ github.repository }}
+          IMAGE_TAG: ${{ github.ref_name }}
+        run: gooci upload-single dist/bundle.tar.gz "ghcr.io/$GH_REPOSITORY:$IMAGE_TAG"
       - if: ${{ startsWith(github.ref, 'refs/tags/') && !contains(github.ref_name, '-') }}
-        run: gooci upload-single dist/bundle.tar.gz "ghcr.io/${{ github.repository }}:latest"
+        env:
+          GH_REPOSITORY: ${{ github.repository }}
+        run: gooci upload-single dist/bundle.tar.gz "ghcr.io/$GH_REPOSITORY:latest"
