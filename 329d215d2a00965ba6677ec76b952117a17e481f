@@ -1,0 +1,40 @@
+lisa-addressed:
+---
+Comment (policies/elbv2_asset_disposal.rego:58):
+Medium: `startswith(event_name, "Delete")` is too broad — it matches `DeleteListener` and `DeleteRule`, not just `DeleteLoadBalancer`. A failed/inactive load balancer whose only delete event is a listener or rule deletion is wrongly credited with disposal audit evidence, so the violation never fires.
+
+This also contradicts the design intent recorded in git notes ("keeping load balancer disposal events separate from listener/rule change evidence"). The management-change policy already uses an explicit `event_name` allowlist; suggest matching the load-balancer disposal event specifically, e.g.:
+
+```rego
+delete_event_exists if {
+    event := events[_]
+    object.get(event, "event_name", "") == "DeleteLoadBalancer"
+}
+```
+---
+Comment (policies/elbv2_edge_endpoint_inventory.rego:68):
+Low: both this rule and the missing-DNS rule above (line 62) emit the identical violation id `{"id": "endpoint_not_inventoried"}`. Because `violation` is a set, the two distinct conditions collapse into a single element — `count(violation)` can never exceed 1 even when both DNS and owner are missing, and a consumer cannot tell which condition fired.
+
+The management-change policy uses distinct ids per condition; suggest the same here, e.g. `dns_not_inventoried` and `owner_not_identified`.
+---
+Comment (policies/elbv2_edge_endpoint_inventory.rego:64):
+Low: silent gap on unknown scheme. The violation rules only fire when `scheme == "internet-facing"`, and `skip_reason` is only set for non-loadbalancer records or `scheme == "internal"`. A `loadbalancer` whose `scheme` is empty/missing/unexpected is therefore neither evaluated nor skipped — it silently passes with no evidence and no reason. Consider treating an unknown scheme as a skip-with-reason (or a violation) so it is not a silent hole in coverage.
+---
+Comment (policies/elbv2_asset_disposal.rego:8):
+Low: `metric_ids: ACM_TLS_ENDPOINTS` looks like a copy-paste — TLS endpoints are unrelated to asset disposal. The same id is also reused on `elbv2_ownership_tags.rego:8` and `elbv2_management_change_audit_events.rego:8`, neither of which concerns TLS either. Worth confirming the intended metric id for each policy.
+---
+Comment (.github/workflows/push.yml:6):
+Low (supply-chain hygiene): this change removed the explicit `permissions: contents: read` block from the test job. The reusable workflow now inherits the default token permissions, which may be broader than needed depending on repo/org settings — a least-privilege regression. Suggest re-adding a minimal explicit block:
+
+```yaml
+jobs:
+  test:
+    permissions:
+      contents: read
+    uses: ./.github/workflows/test.yml
+```
+Implementation guidance: In policies/elbv2_asset_disposal.rego, narrow delete_event_exists so disposal evidence only recognizes the ELBv2 load balancer deletion event. Replace the startswith(event_name, "Delete") check with an exact comparison to "DeleteLoadBalancer" using object.get(event, "event_name", "") == "DeleteLoadBalancer". Do not include DeleteListener or DeleteRule here; those belong only to the management change audit policy. Add or update a disposal policy test proving a failed/inactive load balancer with only DeleteListener or DeleteRule still violates when data.require_disposal_audit_events is true, and a DeleteLoadBalancer event suppresses the violation.
+Implementation guidance: In policies/elbv2_edge_endpoint_inventory.rego, give the two violation rules distinct ids so both missing DNS and missing owner can be represented in the violation set. Use a DNS-specific id such as {"id": "dns_not_inventoried"} for the not dns_name_present rule, and an owner-specific id such as {"id": "owner_not_identified"} for the not owner_tag_present rule. Update any tests or expected README examples that reference the old shared endpoint_not_inventoried id. Add coverage where an internet-facing load balancer missing both DNS and owner returns two violations.
+Implementation guidance: In policies/elbv2_edge_endpoint_inventory.rego, close the silent gap for loadbalancer records whose config.scheme is empty, missing, or not one of "internet-facing" or "internal". Do not add a skip_reason for unknown schemes because the recorded design decision says this policy only treats internal load balancers as not applicable. Instead, add a violation for loadbalancer resources with an unknown scheme, for example {"id": "scheme_unknown"}, and keep the existing internal skip unchanged. Add tests for missing scheme and unexpected scheme values to assert they produce the new violation, while internal still skips and internet-facing still evaluates DNS and owner.
+Implementation guidance: Correct the copy-pasted metric_ids metadata for the non-TLS policies and keep README.md in sync with the policy metadata table. In policies/elbv2_asset_disposal.rego use a disposal-specific metric id such as ELBV2_ASSET_DISPOSAL; in policies/elbv2_ownership_tags.rego use an ownership-specific id such as ELBV2_OWNERSHIP_TAGS; in policies/elbv2_management_change_audit_events.rego use a management-audit-specific id such as ELBV2_MANAGEMENT_CHANGE_AUDIT_EVENTS. Leave policies/elbv2_edge_endpoint_inventory.rego as EDGE_ENDPOINT_INVENTORY and do not change unrelated controls or risk text.
+Implementation guidance: In .github/workflows/push.yml, restore least-privilege token permissions on the reusable workflow job. Under jobs.test add permissions: contents: read at the same indentation level as uses, so the test job still calls ./.github/workflows/test.yml but does not inherit broader default permissions. Preserve the existing pull_request and push triggers.
