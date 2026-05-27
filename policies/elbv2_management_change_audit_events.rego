@@ -94,19 +94,19 @@ management_event_stale if {
 	now_ns - max(event_times) > review_window_ns
 }
 
-violation contains {"id": "management_events_missing"} if {
+violation[{"id": "management_events_missing"}] if {
 	resource_type == "loadbalancer"
 	require_management_audit_events
 	count(management_events) == 0
 }
 
-violation contains {"id": "management_event_unattributable"} if {
+violation[{"id": "management_event_unattributable"}] if {
 	resource_type == "loadbalancer"
 	require_management_audit_events
 	unattributable_event_exists
 }
 
-violation contains {"id": "management_event_stale"} if {
+violation[{"id": "management_event_stale"}] if {
 	resource_type == "loadbalancer"
 	require_management_audit_events
 	count(management_events) > 0

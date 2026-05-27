@@ -46,7 +46,7 @@ skip_reason := sprintf("Resource type %q is not a load balancer; this policy onl
 title := sprintf("Validate ELBv2 multi-AZ redundancy for %s", [resource_id])
 description := sprintf("Load balancer %s is deployed across %d AZs; minimum required is %d.", [resource_id, count(azs), minimum_azs])
 
-violation contains {"id": "insufficient_availability_zones"} if {
+violation[{"id": "insufficient_availability_zones"}] if {
 	resource_type == "loadbalancer"
 	count(azs) < minimum_azs
 }

@@ -59,7 +59,7 @@ delete_event_exists if {
 	event_name in disposal_delete_event_names
 }
 
-violation contains {"id": "disposal_process_unverified"} if {
+violation[{"id": "disposal_process_unverified"}] if {
 	resource_type == "loadbalancer"
 	require_disposal_audit_events
 	not active_or_provisioning_state

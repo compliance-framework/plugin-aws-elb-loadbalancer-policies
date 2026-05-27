@@ -49,7 +49,7 @@ owner_tag_present if {
 	trim(value, " \t\r\n") != ""
 }
 
-violation contains {"id": "owner_tags_missing"} if {
+violation[{"id": "owner_tags_missing"}] if {
 	resource_type == "loadbalancer"
 	not owner_tag_present
 }

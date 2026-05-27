@@ -69,19 +69,19 @@ unknown_scheme if {
 	not scheme == "internal"
 }
 
-violation contains {"id": "dns_not_inventoried"} if {
+violation[{"id": "dns_not_inventoried"}] if {
 	resource_type == "loadbalancer"
 	scheme == "internet-facing"
 	not dns_name_present
 }
 
-violation contains {"id": "owner_not_identified"} if {
+violation[{"id": "owner_not_identified"}] if {
 	resource_type == "loadbalancer"
 	scheme == "internet-facing"
 	not owner_tag_present
 }
 
-violation contains {"id": "scheme_unknown"} if {
+violation[{"id": "scheme_unknown"}] if {
 	resource_type == "loadbalancer"
 	unknown_scheme
 	not unknown_endpoint_scheme_action == "skip"
