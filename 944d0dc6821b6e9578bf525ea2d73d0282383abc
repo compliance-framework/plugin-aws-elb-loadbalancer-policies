@@ -1,0 +1,5 @@
+lisa-addressed:
+---
+Comment (LICENSE:1):
+Revert this change - License should be AGPLv3 -- Not Apache!
+Implementation guidance: In LICENSE, replace the current Apache License 2.0 text with the full GNU Affero General Public License version 3 text. Treat this as reverting the license choice, not as adding a short SPDX line or a custom summary. Preserve the filename LICENSE, ensure the first line identifies the GNU Affero General Public License, and do not change unrelated policy files.
