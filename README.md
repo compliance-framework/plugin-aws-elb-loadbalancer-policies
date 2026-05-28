@@ -1,62 +1,71 @@
-# AWS ELBv2 listener policies
+# AWS ELBv2 load balancer policies
 
-Standalone OPA/Rego policy bundle for listener evidence emitted by the `aws-elbv2` Compliance Framework plugin.
+Standalone OPA/Rego policy bundle for load balancer evidence emitted by the `aws-elbv2` Compliance Framework plugin.
 
 ## Input schema
 
-Each policy evaluates documents where `input.resource.type == "listener"`.
+Each policy evaluates documents where `input.resource.type == "loadbalancer"`.
 
 ```json
 {
   "schema_version": "v1",
   "source": "aws-elbv2",
-  "account": { "account_id": "123456789012" },
+  "account": { "account_id": "123456789012", "tags": {"environment": "prod"} },
   "region": { "name": "us-east-1" },
   "resource": {
-    "id": "...listener/app/my-alb/abc/def",
-    "arn": "arn:aws:elasticloadbalancing:...:listener/app/my-alb/abc/def",
-    "type": "listener"
+    "id": "app/my-alb/abc123",
+    "arn": "arn:aws:elasticloadbalancing:us-east-1:123456789012:loadbalancer/app/my-alb/abc123",
+    "type": "loadbalancer"
   },
   "config": {
-    "listener_arn": "arn:aws:elasticloadbalancing:...:listener/app/my-alb/abc/def",
-    "load_balancer_arn": "arn:aws:elasticloadbalancing:...:loadbalancer/app/my-alb/abc",
-    "protocol": "HTTPS",
-    "port": 443,
-    "ssl_policy": "ELBSecurityPolicy-TLS13-1-2-2021-06",
-    "certificate_arn": "arn:aws:acm:us-east-1:123456789012:certificate/abc"
-  }
+    "load_balancer_arn": "arn:aws:elasticloadbalancing:...:loadbalancer/app/my-alb/abc123",
+    "dns_name": "my-alb-123.us-east-1.elb.amazonaws.com",
+    "scheme": "internet-facing",
+    "type": "application",
+    "state": "active",
+    "availability_zones": ["us-east-1a", "us-east-1b"]
+  },
+  "dynamic": {
+    "cloudtrail_events": [
+      {"event_name": "ModifyListener", "event_time": "2026-04-01T10:00:00Z", "user_identity_arn": "arn:aws:iam::123456789012:role/admin"}
+    ]
+  },
+  "tags": { "owner": "platform-team" }
 }
 ```
-
-Certificate expiry and renewal are intentionally out of scope for this bundle and are handled by ACM policy bundles.
 
 ## Implemented policy packages
 
 | Package | Purpose | Metric ID | Controls |
 | --- | --- | --- | --- |
-| `compliance_framework.elbv2_listener_https_enforcement` | Flags plaintext `HTTP`, `TCP`, `UDP`, or `TCP_UDP` listeners unless explicitly allowed. | `ACM_TLS_ENDPOINTS` | `ctrl-cc6-2-014`, `ctrl-cc6-2-018`, `ctrl-cc6-3-004`, `ctrl-cc6-7-001`, `ctrl-cc6-7-004`, `ctrl-cc6-7-007`, `ctrl-cc6-7-009`, `ctrl-cc6-7-010` |
-| `compliance_framework.elbv2_tls_policy_approved` | Flags `HTTPS` or `TLS` listeners whose `ssl_policy` is not approved. | `ACM_TLS_ENDPOINTS` | `ctrl-cc6-7-007`, `ctrl-cc6-7-008`, `ctrl-cc6-7-010`, `ctrl-cc6-7-011` |
-| `compliance_framework.elbv2_certificate_in_use` | Flags `HTTPS` or `TLS` listeners with no certificate ARN. | `ACM_TLS_ENDPOINTS` | `ctrl-cc6-7-007`, `ctrl-cc6-7-008`, `ctrl-cc6-7-010` |
-| `compliance_framework.elbv2_information_movement` | Flags listener protocols or ports outside configured approved lists. | `ACM_TLS_ENDPOINTS` | `ctrl-cc6-7-002`, `ctrl-cc6-7-005`, `ctrl-cc6-7-008`, `ctrl-cc6-7-011` |
+| `compliance_framework.elbv2_multi_az_redundancy` | Flags load balancers deployed across fewer than the required number of availability zones. | `ELB_TARGET_HEALTH` | `ctrl-a1-1-009`, `ctrl-a1-2-006`, `ctrl-a1-2-007` |
+| `compliance_framework.elbv2_ownership_tags` | Flags load balancers missing a non-empty owner tag. | `ELBV2_OWNERSHIP_TAGS` | `ctrl-cc6-7-017` |
+| `compliance_framework.elbv2_edge_endpoint_inventory` | Flags internet-facing load balancers without DNS inventory evidence or ownership. | `EDGE_ENDPOINT_INVENTORY` | `ctrl-cc5-2-005` |
+| `compliance_framework.elbv2_asset_disposal` | Optionally verifies failed or inactive load balancers have deletion audit evidence. | `ELBV2_ASSET_DISPOSAL` | `ctrl-cc6-5-001`, `ctrl-cc6-7-003`, `ctrl-cc6-7-006` |
+| `compliance_framework.elbv2_management_change_audit_events` | Optionally verifies listener/rule management changes are present, attributable, and timely. | `ELBV2_MANAGEMENT_CHANGE_AUDIT_EVENTS` | `ctrl-cc6-2-015`, `ctrl-cc6-2-019`, `ctrl-cc6-3-013`, `ctrl-cc6-7-018` |
 
-All policies skip non-`listener` records. Policies with no meaningful TLS or information-movement evaluation for Gateway Load Balancer listeners skip `GENEVE`.
+All policies skip non-`loadbalancer` records. `elbv2_edge_endpoint_inventory` also skips `internal` load balancers because the control applies only to externally reachable endpoints.
 
 ## Policy data
 
-Configurable policy defaults are stored in `policies/data.json` and may be overridden by the `policy_data` plugin as flattened data parameters.
+Configurable policy defaults are stored in `policies/data.json` as flattened top-level data values. The agent may override them via its `policy_data` block.
 
-| Name | Default | Description |
+| Name | Default | Meaning |
 | --- | --- | --- |
-| `data.approved_ssl_policies` | `["ELBSecurityPolicy-TLS13-1-2-2021-06", "ELBSecurityPolicy-TLS-1-2-Ext-2018-06"]` | SSL policy names allowed for `HTTPS` and `TLS` listeners. |
-| `data.allowed_plaintext_listener_arns` | `[]` | Listener ARNs allowed to use plaintext `HTTP`, `TCP`, `UDP`, or `TCP_UDP`. |
-| `data.approved_listener_protocols` | `[]` | Approved listener protocols. If omitted or empty, protocol checks pass. |
-| `data.approved_listener_ports` | `[]` | Approved listener ports. Empty means unrestricted. |
+| `data.minimum_availability_zones` | `2` | Minimum number of availability zones required for a load balancer. |
+| `data.required_owner_tag_keys` | `["owner", "team"]` | Tag keys accepted as ownership evidence when present with a non-empty value. |
+| `data.require_disposal_audit_events` | `false` | When `true`, inactive or failed load balancers must have a matching disposal CloudTrail event. |
+| `data.disposal_delete_event_names` | `["DeleteLoadBalancer"]` | CloudTrail event names accepted as load balancer disposal evidence. |
+| `data.require_management_audit_events` | `false` | When `true`, listener/rule management change events must exist, be attributable, and be recent. |
+| `data.change_review_window_days` | `90` | Maximum age, in days, for the newest management change event when management audit enforcement is enabled. |
+| `data.unknown_endpoint_scheme_action` | `"violation"` | How edge endpoint inventory handles load balancers whose scheme is not `internet-facing` or `internal`; set to `skip` to emit a skip reason instead. |
 
 ## Testing
 
 ```shell
+opa fmt --list --fail policies
+opa check --strict policies
 opa test policies
-opa check policies
 ```
 
 ## Bundling
