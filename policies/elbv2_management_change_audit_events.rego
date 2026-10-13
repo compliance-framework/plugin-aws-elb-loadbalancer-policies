@@ -39,12 +39,12 @@ resource := object.get(input, "resource", {})
 resource_type := object.get(resource, "type", "")
 resource_id := object.get(resource, "id", "unknown")
 events := object.get(dynamic, "cloudtrail_events", [])
-require_management_audit_events := data.require_management_audit_events
-change_review_window_days := data.change_review_window_days
+require_management_audit_events := data.require_management_audit_events # regal ignore:unresolved-reference
+change_review_window_days := data.change_review_window_days # regal ignore:unresolved-reference
 review_window_ns := (((change_review_window_days * 24) * 60) * 60) * 1000000000
 
-now_ns := data.now if {
-	is_number(data.now)
+now_ns := data.now if { # regal ignore:unresolved-reference
+	is_number(data.now) # regal ignore:unresolved-reference
 } else := time.now_ns()
 
 management_event_names := {
