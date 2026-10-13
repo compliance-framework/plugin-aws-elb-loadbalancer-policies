@@ -1,0 +1,2 @@
+lisa-selfreview:
+Pass 1 (packs core, rego-policy): approve, no findings. All six workflow/config files are byte-identical to the reviewed and merged plugin-file-attestation-policies#4; only the manifest seed differs (0.1.0). CORE-CI-001: every caller has top-level permissions and SHA-pinned shared workflows (v1.5.2). actionlint v1.7.12 clean; OPA 1.14.1 build/check --strict/fmt/test (35/35) pass; config has no drift vs release-please/defaults.json at v1.5.2.
