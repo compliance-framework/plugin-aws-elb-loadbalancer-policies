@@ -3,3 +3,6 @@ W2-S4-T02: fix CI errors only (user decision 2026-10-13); Regal warnings (43: 24
 data.json keys and the optional data.now override are unresolved-reference in Regal; handled with trailing line-scoped `# regal ignore:unresolved-reference` comments (30 lines), not a repo .regal/config.yaml, so CI keeps the shared config.
 ci.yml copied verbatim from mock-plugin-policies-1 (workflows v1.5.1 @7b55019); release.yml and build-and-upload.yml untouched (W3 replaces them).
 Behaviour check: opa eval data.compliance_framework on main vs branch, 53 inputs x 5 data configs, time.now_ns frozen: raw JSON identical.
+
+lisa-selfreview:
+Pass 1 (ccf-review core + rego-policy): approve, no findings on the diff (comments-only Rego change plus verbatim workflow copy). Pre-existing, out of scope: METADATA annotates risk_templates (rule scope) and lacks custom.schedule; risk_templates have no violation_ids; data.now not in data.json/README; README Testing section still lists the OPA 1.6-era commands.
