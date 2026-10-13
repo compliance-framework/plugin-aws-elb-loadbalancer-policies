@@ -12,7 +12,7 @@ test_single_az_violation if {
 
 test_non_default_minimum_azs if {
 	inp := {"resource": {"type": "loadbalancer", "id": "lb-1"}, "config": {"availability_zones": ["a", "b"]}}
-	count(data.compliance_framework.elbv2_multi_az_redundancy.violation) == 1 with input as inp with data.minimum_availability_zones as 3
+	count(data.compliance_framework.elbv2_multi_az_redundancy.violation) == 1 with input as inp with data.minimum_availability_zones as 3 # regal ignore:unresolved-reference
 }
 
 test_non_loadbalancer_record_skipped if {

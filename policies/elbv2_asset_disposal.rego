@@ -39,8 +39,8 @@ resource_type := object.get(resource, "type", "")
 resource_id := object.get(resource, "id", "unknown")
 state := object.get(config, "state", "")
 events := object.get(dynamic, "cloudtrail_events", [])
-require_disposal_audit_events := data.require_disposal_audit_events
-disposal_delete_event_names := data.disposal_delete_event_names
+require_disposal_audit_events := data.require_disposal_audit_events # regal ignore:unresolved-reference
+disposal_delete_event_names := data.disposal_delete_event_names # regal ignore:unresolved-reference
 
 skip_reason := sprintf("Resource type %q is not a load balancer; this policy only applies to loadbalancer records.", [resource_type]) if {
 	not resource_type == "loadbalancer"

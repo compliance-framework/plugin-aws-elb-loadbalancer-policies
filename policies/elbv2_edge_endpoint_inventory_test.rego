@@ -69,8 +69,8 @@ test_unknown_scheme_can_be_configured_to_skip if {
 		"resource": {"type": "loadbalancer", "id": "lb-1"},
 		"config": {"scheme": "private"},
 	}
-	count(data.compliance_framework.elbv2_edge_endpoint_inventory.violation) == 0 with input as inp with data.unknown_endpoint_scheme_action as "skip"
-	data.compliance_framework.elbv2_edge_endpoint_inventory.skip_reason with input as inp with data.unknown_endpoint_scheme_action as "skip"
+	count(data.compliance_framework.elbv2_edge_endpoint_inventory.violation) == 0 with input as inp with data.unknown_endpoint_scheme_action as "skip" # regal ignore:unresolved-reference
+	data.compliance_framework.elbv2_edge_endpoint_inventory.skip_reason with input as inp with data.unknown_endpoint_scheme_action as "skip" # regal ignore:unresolved-reference
 }
 
 test_non_default_owner_key if {
@@ -79,7 +79,7 @@ test_non_default_owner_key if {
 		"config": {"scheme": "internet-facing", "dns_name": "lb.example.elb.amazonaws.com"},
 		"tags": {"service-owner": "platform"},
 	}
-	count(data.compliance_framework.elbv2_edge_endpoint_inventory.violation) == 0 with input as inp with data.required_owner_tag_keys as ["service-owner"]
+	count(data.compliance_framework.elbv2_edge_endpoint_inventory.violation) == 0 with input as inp with data.required_owner_tag_keys as ["service-owner"] # regal ignore:unresolved-reference
 }
 
 test_non_loadbalancer_record_skipped if {

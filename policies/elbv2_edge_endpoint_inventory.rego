@@ -37,8 +37,8 @@ resource_id := object.get(resource, "id", "unknown")
 scheme := object.get(config, "scheme", "")
 dns_name := object.get(config, "dns_name", "")
 tags := object.get(input, "tags", {})
-required_owner_tag_keys := data.required_owner_tag_keys
-unknown_endpoint_scheme_action := data.unknown_endpoint_scheme_action
+required_owner_tag_keys := data.required_owner_tag_keys # regal ignore:unresolved-reference
+unknown_endpoint_scheme_action := data.unknown_endpoint_scheme_action # regal ignore:unresolved-reference
 
 skip_reason := sprintf("Resource type %q is not a load balancer; this policy only applies to loadbalancer records.", [resource_type]) if {
 	not resource_type == "loadbalancer"

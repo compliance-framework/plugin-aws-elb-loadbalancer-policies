@@ -37,7 +37,7 @@ resource := object.get(input, "resource", {})
 resource_type := object.get(resource, "type", "")
 resource_id := object.get(resource, "id", "unknown")
 azs := object.get(config, "availability_zones", [])
-minimum_azs := data.minimum_availability_zones
+minimum_azs := data.minimum_availability_zones # regal ignore:unresolved-reference
 
 skip_reason := sprintf("Resource type %q is not a load balancer; this policy only applies to loadbalancer records.", [resource_type]) if {
 	not resource_type == "loadbalancer"

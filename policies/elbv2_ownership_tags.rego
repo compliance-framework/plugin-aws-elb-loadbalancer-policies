@@ -34,7 +34,7 @@ resource := object.get(input, "resource", {})
 resource_type := object.get(resource, "type", "")
 resource_id := object.get(resource, "id", "unknown")
 tags := object.get(input, "tags", {})
-required_owner_tag_keys := data.required_owner_tag_keys
+required_owner_tag_keys := data.required_owner_tag_keys # regal ignore:unresolved-reference
 
 skip_reason := sprintf("Resource type %q is not a load balancer; this policy only applies to loadbalancer records.", [resource_type]) if {
 	not resource_type == "loadbalancer"
